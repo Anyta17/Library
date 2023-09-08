@@ -1,3 +1,54 @@
-from django.test import TestCase
+from rest_framework import status
+from rest_framework.test import APITestCase
+from django.contrib.auth.models import User
+from book.models import Book
 
-# Create your tests here.
+
+class BookPermissionTests(APITestCase):
+    def setUp(self):
+        self.admin_user = User.objects.create_user(
+            username="admin",
+            password="adminpassword",
+            is_staff=True,
+        )
+
+        self.normal_user = User.objects.create_user(
+            username="user",
+            password="userpassword",
+        )
+
+        self.book = Book.objects.create(
+            title="Test Book",
+            author="Test Author",
+            cover="HARD",
+            inventory=10,
+            daily_fee=1.0,
+        )
+
+    def test_admin_can_create_book(self):
+        self.client.force_authenticate(user=self.admin_user)
+        data = {
+            "title": "New Book",
+            "author": "New Author",
+            "cover": "SOFT",
+            "inventory": 5,
+            "daily_fee": 0.5,
+        }
+        response = self.client.post("/api/books/", data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_normal_user_cannot_create_book(self):
+        self.client.force_authenticate(user=self.normal_user)
+        data = {
+            "title": "New Book",
+            "author": "New Author",
+            "cover": "SOFT",
+            "inventory": 5,
+            "daily_fee": 0.5,
+        }
+        response = self.client.post("/api/books/", data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_all_users_can_list_books(self):
+        response = self.client.get("/api/books/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
