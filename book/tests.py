@@ -34,7 +34,7 @@ class BookPermissionTests(APITestCase):
             "inventory": 5,
             "daily_fee": 0.5,
         }
-        response = self.client.post("/api/books/", data)
+        response = self.client.post("/books/", data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_normal_user_cannot_create_book(self):
@@ -46,9 +46,9 @@ class BookPermissionTests(APITestCase):
             "inventory": 5,
             "daily_fee": 0.5,
         }
-        response = self.client.post("/api/books/", data)
+        response = self.client.post("/books/", data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_all_users_can_list_books(self):
-        response = self.client.get("/api/books/")
+        response = self.client.get("/books/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
