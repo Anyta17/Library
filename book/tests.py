@@ -1,19 +1,19 @@
 from rest_framework import status
 from rest_framework.test import APITestCase
-from django.contrib.auth.models import User
 from book.models import Book
+from user.models import CustomUser
 
 
 class BookPermissionTests(APITestCase):
     def setUp(self):
-        self.admin_user = User.objects.create_user(
-            username="admin",
+        self.admin_user = CustomUser.objects.create_user(
+            email="admin@add.min",
             password="adminpassword",
             is_staff=True,
         )
 
-        self.normal_user = User.objects.create_user(
-            username="user",
+        self.normal_user = CustomUser.objects.create_user(
+            email="user@123.us",
             password="userpassword",
         )
 
