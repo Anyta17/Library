@@ -98,3 +98,54 @@ class BorrowingDetailSerializerTests(TestCase):
         data = self.serializer.data
         self.assertEqual(data["user_id"], self.user.id)
 
+
+class BorrowingCreateViewTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user(
+            email="testuser@example.com",
+            password="testpassword"
+        )
+        self.book = Book.objects.create(
+            title="Test Book",
+            author="Test Author",
+            cover="SOFT",
+            daily_fee=23,
+            inventory=2
+        )
+        self.create_url = reverse("borrowing:borrowing-create")
+
+    def test_create_borrowing(self):
+        self.client.force_authenticate(user=self.user)
+
+        data = {
+            "borrow_date": "2023-09-07",
+            "expected_return_date": "2023-09-14",
+            "book_id": self.book.id,
+            "user_id": self.user.id,
+        }
+
+        response = self.client.post(self.create_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        self.book.refresh_from_db()
+        self.assertEqual(self.book.inventory, 1)
+
+    def test_create_borrowing_out_of_stock(self):
+        self.client.force_authenticate(user=self.user)
+
+        self.book.inventory = 0
+        self.book.save()
+
+        data = {
+            "borrow_date": "2023-09-07",
+            "expected_return_date": "2023-09-14",
+            "book_id": self.book.id
+        }
+
+        response = self.client.post(self.create_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data["book_id"][0],
+            "This book is out of stock."
+        )
