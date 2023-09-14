@@ -20,12 +20,12 @@ class BorrowingFilter(django_filters.FilterSet):
         fields = ["is_active", "user_id"]
 
     @staticmethod
-    def filter_is_active(queryset, value):
+    def filter_is_active(queryset, name, value):
         if value:
             return queryset.filter(actual_return_date__isnull=True)
         return queryset
 
-    def filter_user_id(self, queryset, value):
+    def filter_user_id(self, queryset, name, value):
         if self.request.user.is_staff:
             return queryset.filter(user_id=value)
         return queryset.filter(user_id=self.request.user.id)
