@@ -1,4 +1,5 @@
 from rest_framework import generics
+
 from .models import Book
 from .permissions import IsAdminOrReadOnly
 from .serializers import BookSerializer

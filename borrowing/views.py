@@ -1,6 +1,6 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, filters
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from django_filters.rest_framework import DjangoFilterBackend
 
 from .filters import BorrowingFilter
 from .models import Borrowing

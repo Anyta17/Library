@@ -16,7 +16,7 @@ To set up the project locally, follow these steps:
 2. Navigate to the project directory:
 
     ```
-    cd library
+    cd Library
     ```
 
 3. Create a virtual environment and activate it:
@@ -70,6 +70,11 @@ The project uses environment variables to store sensitive information. Follow th
   ```
   python manage.py runserver
   ```
+
+Note: You can create a user using the following command:
+   ```
+   python manage.py createsuperuser
+   ```
 
 ## API Endpoints
 
